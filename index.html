@@ -1,441 +1,262 @@
-<html><body><meta charset="utf-8"><p></p><div align="left">
- <span style="font-size:16">&lt;!DOCTYPE&nbsp;html&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;html&nbsp;lang="zh-CN"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;head&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;meta&nbsp;charset="UTF-8"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;meta&nbsp;name="viewport"&nbsp;content="width=device-width,&nbsp;initial-scale=1.0"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;title&gt;提示词生成器&nbsp;·&nbsp;GPT&nbsp;/&nbsp;Claude&nbsp;/&nbsp;Gemini&lt;/title&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;style&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;:root&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;--bg:#f6f7fb;&nbsp;--card:#fff;&nbsp;--line:#d9dee8;&nbsp;--text:#1f2937;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;--muted:#6b7280;&nbsp;--accent:#2563eb;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;*&nbsp;{&nbsp;box-sizing:&nbsp;border-box;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;body&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;margin:0;&nbsp;font-family:&nbsp;system-ui,&nbsp;-apple-system,&nbsp;"Segoe&nbsp;UI",&nbsp;Roboto,</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;"PingFang&nbsp;SC",&nbsp;"Microsoft&nbsp;YaHei",&nbsp;sans-serif;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;background:var(--bg);&nbsp;color:var(--text);</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.wrap&nbsp;{&nbsp;max-width:1100px;&nbsp;margin:0&nbsp;auto;&nbsp;padding:24px;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;h1&nbsp;{&nbsp;font-size:24px;&nbsp;margin:0&nbsp;0&nbsp;6px;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.sub&nbsp;{&nbsp;color:var(--muted);&nbsp;margin-bottom:20px;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.layout&nbsp;{&nbsp;display:grid;&nbsp;grid-template-columns:&nbsp;1fr&nbsp;1fr;&nbsp;gap:16px;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;@media&nbsp;(max-width:&nbsp;860px)&nbsp;{&nbsp;.layout&nbsp;{&nbsp;grid-template-columns:&nbsp;1fr;&nbsp;}&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.card&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;background:var(--card);&nbsp;border:1px&nbsp;solid&nbsp;var(--line);</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;border-radius:14px;&nbsp;padding:16px;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;box-shadow:0&nbsp;6px&nbsp;18px&nbsp;rgba(15,23,42,.04);</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;label&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;display:block;&nbsp;font-size:13px;&nbsp;font-weight:600;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;margin:10px&nbsp;0&nbsp;6px;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;input,&nbsp;select,&nbsp;textarea&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;width:100%;&nbsp;border:1px&nbsp;solid&nbsp;var(--line);&nbsp;border-radius:10px;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;padding:10px&nbsp;12px;&nbsp;font:inherit;&nbsp;background:#fff;&nbsp;color:var(--text);</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;textarea&nbsp;{&nbsp;min-height:74px;&nbsp;resize:vertical;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.row&nbsp;{&nbsp;display:grid;&nbsp;grid-template-columns:1fr&nbsp;1fr;&nbsp;gap:12px;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.actions&nbsp;{&nbsp;display:flex;&nbsp;gap:10px;&nbsp;margin-top:14px;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;button&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;border:0;&nbsp;border-radius:10px;&nbsp;padding:10px&nbsp;14px;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;font-weight:700;&nbsp;cursor:pointer;&nbsp;background:var(--accent);&nbsp;color:#fff;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;button.secondary&nbsp;{&nbsp;background:#e5e7eb;&nbsp;color:#111827;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;#result&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;min-height:420px;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;font-family:&nbsp;ui-monospace,&nbsp;SFMono-Regular,&nbsp;Menlo,&nbsp;Consolas,&nbsp;monospace;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;font-size:13px;&nbsp;line-height:1.55;&nbsp;white-space:pre-wrap;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.hint&nbsp;{&nbsp;font-size:12px;&nbsp;color:var(--muted);&nbsp;margin-top:6px;&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/style&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/head&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;body&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;div&nbsp;class="wrap"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;h1&gt;提示词生成器&lt;/h1&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&nbsp;class="sub"&gt;填写任务信息，选择&nbsp;GPT&nbsp;/&nbsp;Claude&nbsp;/&nbsp;Gemini&nbsp;/&nbsp;通用，生成对应模型更易理解的提示词。&lt;/div&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&nbsp;class="layout"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&nbsp;class="card"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&nbsp;class="row"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="model"&gt;目标模型&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;select&nbsp;id="model"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;option&nbsp;value="gpt"&gt;GPT&nbsp;/&nbsp;OpenAI&lt;/option&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;option&nbsp;value="claude"&gt;Claude&nbsp;/&nbsp;Anthropic&lt;/option&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;option&nbsp;value="gemini"&gt;Gemini&nbsp;/&nbsp;Google&lt;/option&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;option&nbsp;value="universal"&gt;通用格式&lt;/option&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/select&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/div&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="step"&gt;推理要求&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;select&nbsp;id="step"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;option&nbsp;value="internal"&gt;内部推理，不输出过程&lt;/option&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;option&nbsp;value="no"&gt;直接输出结果&lt;/option&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;option&nbsp;value="yes"&gt;输出关键步骤&lt;/option&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/select&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/div&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/div&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="role"&gt;角色&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;input&nbsp;id="role"&nbsp;placeholder="例如：资深产品经理、Python&nbsp;架构师、儿童科普作者"&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="task"&gt;任务&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;textarea&nbsp;id="task"&nbsp;placeholder="例如：把下面的技术文档改写成小白能看懂的教程"&gt;&lt;/textarea&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="context"&gt;背景&nbsp;/&nbsp;上下文&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;textarea&nbsp;id="context"&nbsp;placeholder="例如：读者没有编程基础，需要大量类比"&gt;&lt;/textarea&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="input"&gt;输入数据&nbsp;/&nbsp;待处理内容&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;textarea&nbsp;id="input"&nbsp;placeholder="粘贴文档、代码、数据或用户原始需求"&gt;&lt;/textarea&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="constraints"&gt;约束条件（每行一条）&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;textarea&nbsp;id="constraints"&nbsp;placeholder="不要改变原意&amp;#10;每段不超过&nbsp;3&nbsp;句&amp;#10;不要编造数据"&gt;&lt;/textarea&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="outputFormat"&gt;输出格式&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;textarea&nbsp;id="outputFormat"&nbsp;placeholder="例如：Markdown，包含标题、步骤、注意事项；或&nbsp;JSON&nbsp;schema"&gt;&lt;/textarea&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="examples"&gt;示例（可选）&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;textarea&nbsp;id="examples"&nbsp;placeholder="输入示例&nbsp;→&nbsp;输出示例"&gt;&lt;/textarea&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="tone"&gt;语气&nbsp;/&nbsp;风格&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;input&nbsp;id="tone"&nbsp;placeholder="例如：友好、简洁、专业、教学式"&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&nbsp;class="actions"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;button&nbsp;onclick="generate()"&gt;生成提示词&lt;/button&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;button&nbsp;class="secondary"&nbsp;onclick="copyPrompt()"&gt;复制结果&lt;/button&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/div&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&nbsp;class="hint"&gt;提示：Claude&nbsp;模板会自动使用&nbsp;XML&nbsp;标签；GPT/Gemini&nbsp;使用&nbsp;Markdown&nbsp;结构化。&lt;/div&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/div&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;&lt;div&nbsp;class="card"&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;label&nbsp;for="result"&gt;生成的提示词&lt;/label&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;textarea&nbsp;id="result"&nbsp;readonly&nbsp;placeholder="点击“生成提示词”后显示结果"&gt;&lt;/textarea&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/div&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;&lt;/div&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/div&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&lt;script&gt;</span>
-</div><div align="left">
- <span style="font-size:16">function&nbsp;val(id)&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;return&nbsp;document.getElementById(id).value.trim();</span>
-</div><div align="left">
- <span style="font-size:16">}</span>
-</div><br><div align="left">
- <span style="font-size:16">function&nbsp;lines(text)&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;return&nbsp;text&nbsp;?&nbsp;text.split(/\r?\n/).map(s&nbsp;=&gt;&nbsp;s.trim()).filter(Boolean)&nbsp;:&nbsp;[];</span>
-</div><div align="left">
- <span style="font-size:16">}</span>
-</div><br><div align="left">
- <span style="font-size:16">function&nbsp;bullet(text,&nbsp;prefix&nbsp;=&nbsp;'-&nbsp;')&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;arr&nbsp;=&nbsp;lines(text);</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;return&nbsp;arr.length&nbsp;?&nbsp;arr.map(s&nbsp;=&gt;&nbsp;prefix&nbsp;+&nbsp;s).join('\n')&nbsp;:&nbsp;'';</span>
-</div><div align="left">
- <span style="font-size:16">}</span>
-</div><br><div align="left">
- <span style="font-size:16">function&nbsp;fallback(text,&nbsp;fb)&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;return&nbsp;text&nbsp;||&nbsp;fb;</span>
-</div><div align="left">
- <span style="font-size:16">}</span>
-</div><br><div align="left">
- <span style="font-size:16">function&nbsp;generate()&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;model&nbsp;=&nbsp;val('model');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;role&nbsp;=&nbsp;fallback(val('role'),&nbsp;'专业助手');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;task&nbsp;=&nbsp;fallback(val('task'),&nbsp;'请完成用户指定的任务。');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;context&nbsp;=&nbsp;val('context');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;input&nbsp;=&nbsp;val('input');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;constraints&nbsp;=&nbsp;val('constraints');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;outputFormat&nbsp;=&nbsp;fallback(val('outputFormat'),&nbsp;'使用清晰、结构化的&nbsp;Markdown&nbsp;输出。');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;examples&nbsp;=&nbsp;val('examples');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;tone&nbsp;=&nbsp;val('tone');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;step&nbsp;=&nbsp;val('step');</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;constraintBlock&nbsp;=&nbsp;bullet(constraints)&nbsp;||&nbsp;'-&nbsp;遵循用户要求，不要编造。';</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;toneLine&nbsp;=&nbsp;tone&nbsp;?&nbsp;`\n-&nbsp;语气风格：${tone}`&nbsp;:&nbsp;'';</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;stepText&nbsp;=</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;step&nbsp;===&nbsp;'internal'</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;?&nbsp;'请在内部逐步推理，但最终只输出结果，不要展示推理过程。'</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;:&nbsp;step&nbsp;===&nbsp;'yes'</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;?&nbsp;'请展示关键推理步骤，并给出最终结果。'</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;:&nbsp;'请直接给出最终结果。';</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;let&nbsp;prompt&nbsp;=&nbsp;'';</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;if&nbsp;(model&nbsp;===&nbsp;'gpt')&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;prompt&nbsp;=&nbsp;`#&nbsp;角色</span>
-</div><div align="left">
- <span style="font-size:16">你是一位${role}。</span>
-</div><br><div align="left">
- <span style="font-size:16">#&nbsp;任务</span>
-</div><div align="left">
- <span style="font-size:16">${task}</span>
-</div><br><div align="left">
- <span style="font-size:16">${context&nbsp;?&nbsp;`#&nbsp;背景\n${context}\n\n`&nbsp;:&nbsp;''}${input&nbsp;?&nbsp;`#&nbsp;输入\n${input}\n\n`&nbsp;:&nbsp;''}#&nbsp;约束</span>
-</div><div align="left">
- <span style="font-size:16">${constraintBlock}${toneLine}</span>
-</div><br><div align="left">
- <span style="font-size:16">#&nbsp;输出格式</span>
-</div><div align="left">
- <span style="font-size:16">${outputFormat}</span>
-</div><br><div align="left">
- <span style="font-size:16">${examples&nbsp;?&nbsp;`#&nbsp;示例\n${examples}\n\n`&nbsp;:&nbsp;''}#&nbsp;执行要求</span>
-</div><div align="left">
- <span style="font-size:16">${stepText}</span>
-</div><div align="left">
- <span style="font-size:16">最终输出必须严格满足上述格式与约束。`;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}&nbsp;else&nbsp;if&nbsp;(model&nbsp;===&nbsp;'claude')&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;prompt&nbsp;=&nbsp;`&lt;role&gt;</span>
-</div><div align="left">
- <span style="font-size:16">你是一位${role}。</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/role&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">${context&nbsp;?&nbsp;`&lt;context&gt;\n${context}\n&lt;/context&gt;\n\n`&nbsp;:&nbsp;''}${input&nbsp;?&nbsp;`&lt;input&gt;\n${input}\n&lt;/input&gt;\n\n`&nbsp;:&nbsp;''}&lt;task&gt;</span>
-</div><div align="left">
- <span style="font-size:16">${task}</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/task&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&lt;constraints&gt;</span>
-</div><div align="left">
- <span style="font-size:16">${constraintBlock}${toneLine}</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/constraints&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">&lt;output_format&gt;</span>
-</div><div align="left">
- <span style="font-size:16">${outputFormat}</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/output_format&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">${examples&nbsp;?&nbsp;`&lt;examples&gt;\n${examples}\n&lt;/examples&gt;\n\n`&nbsp;:&nbsp;''}&lt;thinking_instruction&gt;</span>
-</div><div align="left">
- <span style="font-size:16">${stepText}</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/thinking_instruction&gt;</span>
-</div><br><div align="left">
- <span style="font-size:16">请严格按照上述&nbsp;XML&nbsp;标签中的要求执行。`;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}&nbsp;else&nbsp;if&nbsp;(model&nbsp;===&nbsp;'gemini')&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;prompt&nbsp;=&nbsp;`##&nbsp;角色</span>
-</div><div align="left">
- <span style="font-size:16">你是一位${role}。</span>
-</div><br><div align="left">
- <span style="font-size:16">##&nbsp;目标</span>
-</div><div align="left">
- <span style="font-size:16">${task}</span>
-</div><br><div align="left">
- <span style="font-size:16">${context&nbsp;?&nbsp;`##&nbsp;背景\n${context}\n\n`&nbsp;:&nbsp;''}${input&nbsp;?&nbsp;`##&nbsp;输入\n${input}\n\n`&nbsp;:&nbsp;''}##&nbsp;约束</span>
-</div><div align="left">
- <span style="font-size:16">${constraintBlock}${toneLine}</span>
-</div><br><div align="left">
- <span style="font-size:16">##&nbsp;输出格式</span>
-</div><div align="left">
- <span style="font-size:16">${outputFormat}</span>
-</div><br><div align="left">
- <span style="font-size:16">${examples&nbsp;?&nbsp;`##&nbsp;示例\n${examples}\n\n`&nbsp;:&nbsp;''}##&nbsp;执行步骤</span>
-</div><div align="left">
- <span style="font-size:16">1.&nbsp;理解目标、背景和输入。</span>
-</div><div align="left">
- <span style="font-size:16">2.&nbsp;按约束条件处理内容。</span>
-</div><div align="left">
- <span style="font-size:16">3.&nbsp;生成符合输出格式的最终答案。</span>
-</div><div align="left">
- <span style="font-size:16">${stepText}</span>
-</div><br><div align="left">
- <span style="font-size:16">请现在开始。`;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}&nbsp;else&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;prompt&nbsp;=&nbsp;`#&nbsp;角色</span>
-</div><div align="left">
- <span style="font-size:16">你是一位${role}。</span>
-</div><br><div align="left">
- <span style="font-size:16">#&nbsp;任务</span>
-</div><div align="left">
- <span style="font-size:16">${task}</span>
-</div><br><div align="left">
- <span style="font-size:16">${context&nbsp;?&nbsp;`#&nbsp;背景\n${context}\n\n`&nbsp;:&nbsp;''}${input&nbsp;?&nbsp;`#&nbsp;输入\n${input}\n\n`&nbsp;:&nbsp;''}#&nbsp;约束</span>
-</div><div align="left">
- <span style="font-size:16">${constraintBlock}${toneLine}</span>
-</div><br><div align="left">
- <span style="font-size:16">#&nbsp;输出格式</span>
-</div><div align="left">
- <span style="font-size:16">${outputFormat}</span>
-</div><br><div align="left">
- <span style="font-size:16">${examples&nbsp;?&nbsp;`#&nbsp;示例\n${examples}\n\n`&nbsp;:&nbsp;''}#&nbsp;执行要求</span>
-</div><div align="left">
- <span style="font-size:16">${stepText}</span>
-</div><div align="left">
- <span style="font-size:16">请严格按以上结构执行。`;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;document.getElementById('result').value&nbsp;=&nbsp;prompt;</span>
-</div><div align="left">
- <span style="font-size:16">}</span>
-</div><br><div align="left">
- <span style="font-size:16">function&nbsp;copyPrompt()&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;const&nbsp;result&nbsp;=&nbsp;document.getElementById('result');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;if&nbsp;(!result.value.trim())&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;alert('请先生成提示词');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;return;</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;result.select();</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;result.setSelectionRange(0,&nbsp;result.value.length);</span>
-</div><br><div align="left">
- <span style="font-size:16">&nbsp;if&nbsp;(navigator.clipboard&nbsp;&amp;&amp;&nbsp;navigator.clipboard.writeText)&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;navigator.clipboard.writeText(result.value)</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.then(()&nbsp;=&gt;&nbsp;alert('已复制到剪贴板'))</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;.catch(()&nbsp;=&gt;&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;document.execCommand('copy');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;alert('已复制到剪贴板');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;});</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}&nbsp;else&nbsp;{</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;document.execCommand('copy');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;alert('已复制到剪贴板');</span>
-</div><div align="left">
- <span style="font-size:16">&nbsp;}</span>
-</div><div align="left">
- <span style="font-size:16">}</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/script&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/body&gt;</span>
-</div><div align="left">
- <span style="font-size:16">&lt;/html&gt;</span>
-</div><p></p></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>提示词生成器 · GPT / Claude / Gemini</title>
+<style>
+  :root {
+    --bg:#f6f7fb; --card:#fff; --line:#d9dee8; --text:#1f2937;
+    --muted:#6b7280; --accent:#2563eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto,
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+    background:var(--bg); color:var(--text);
+  }
+  .wrap { max-width:1100px; margin:0 auto; padding:24px; }
+  h1 { font-size:24px; margin:0 0 6px; }
+  .sub { color:var(--muted); margin-bottom:20px; }
+  .layout { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  .card {
+    background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:16px;
+    box-shadow:0 6px 18px rgba(15,23,42,.04);
+  }
+  label {
+    display:block; font-size:13px; font-weight:600;
+    margin:10px 0 6px;
+  }
+  input, select, textarea {
+    width:100%; border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; font:inherit; background:#fff; color:var(--text);
+  }
+  textarea { min-height:74px; resize:vertical; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .actions { display:flex; gap:10px; margin-top:14px; }
+  button {
+    border:0; border-radius:10px; padding:10px 14px;
+    font-weight:700; cursor:pointer; background:var(--accent); color:#fff;
+  }
+  button.secondary { background:#e5e7eb; color:#111827; }
+  #result {
+    min-height:420px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size:13px; line-height:1.55; white-space:pre-wrap;
+  }
+  .hint { font-size:12px; color:var(--muted); margin-top:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>提示词生成器</h1>
+  <div class="sub">填写任务信息，选择 GPT / Claude / Gemini / 通用，生成对应模型更易理解的提示词。</div>
+
+  <div class="layout">
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="model">目标模型</label>
+          <select id="model">
+            <option value="gpt">GPT / OpenAI</option>
+            <option value="claude">Claude / Anthropic</option>
+            <option value="gemini">Gemini / Google</option>
+            <option value="universal">通用格式</option>
+          </select>
+        </div>
+        <div>
+          <label for="step">推理要求</label>
+          <select id="step">
+            <option value="internal">内部推理，不输出过程</option>
+            <option value="no">直接输出结果</option>
+            <option value="yes">输出关键步骤</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="role">角色</label>
+      <input id="role" placeholder="例如：资深产品经理、Python 架构师、儿童科普作者">
+
+      <label for="task">任务</label>
+      <textarea id="task" placeholder="例如：把下面的技术文档改写成小白能看懂的教程"></textarea>
+
+      <label for="context">背景 / 上下文</label>
+      <textarea id="context" placeholder="例如：读者没有编程基础，需要大量类比"></textarea>
+
+      <label for="input">输入数据 / 待处理内容</label>
+      <textarea id="input" placeholder="粘贴文档、代码、数据或用户原始需求"></textarea>
+
+      <label for="constraints">约束条件（每行一条）</label>
+      <textarea id="constraints" placeholder="不要改变原意&#10;每段不超过 3 句&#10;不要编造数据"></textarea>
+
+      <label for="outputFormat">输出格式</label>
+      <textarea id="outputFormat" placeholder="例如：Markdown，包含标题、步骤、注意事项；或 JSON schema"></textarea>
+
+      <label for="examples">示例（可选）</label>
+      <textarea id="examples" placeholder="输入示例 → 输出示例"></textarea>
+
+      <label for="tone">语气 / 风格</label>
+      <input id="tone" placeholder="例如：友好、简洁、专业、教学式">
+
+      <div class="actions">
+        <button onclick="generate()">生成提示词</button>
+        <button class="secondary" onclick="copyPrompt()">复制结果</button>
+      </div>
+      <div class="hint">提示：Claude 模板会自动使用 XML 标签；GPT/Gemini 使用 Markdown 结构化。</div>
+    </div>
+
+    <div class="card">
+      <label for="result">生成的提示词</label>
+      <textarea id="result" readonly placeholder="点击“生成提示词”后显示结果"></textarea>
+    </div>
+  </div>
+</div>
+
+<script>
+function val(id) {
+  return document.getElementById(id).value.trim();
+}
+
+function lines(text) {
+  return text ? text.split(/\r?\n/).map(s => s.trim()).filter(Boolean) : [];
+}
+
+function bullet(text, prefix = '- ') {
+  const arr = lines(text);
+  return arr.length ? arr.map(s => prefix + s).join('\n') : '';
+}
+
+function fallback(text, fb) {
+  return text || fb;
+}
+
+function generate() {
+  const model = val('model');
+  const role = fallback(val('role'), '专业助手');
+  const task = fallback(val('task'), '请完成用户指定的任务。');
+  const context = val('context');
+  const input = val('input');
+  const constraints = val('constraints');
+  const outputFormat = fallback(val('outputFormat'), '使用清晰、结构化的 Markdown 输出。');
+  const examples = val('examples');
+  const tone = val('tone');
+  const step = val('step');
+
+  const constraintBlock = bullet(constraints) || '- 遵循用户要求，不要编造。';
+  const toneLine = tone ? `\n- 语气风格：${tone}` : '';
+
+  const stepText =
+    step === 'internal'
+      ? '请在内部逐步推理，但最终只输出结果，不要展示推理过程。'
+      : step === 'yes'
+        ? '请展示关键推理步骤，并给出最终结果。'
+        : '请直接给出最终结果。';
+
+  let prompt = '';
+
+  if (model === 'gpt') {
+    prompt = `# 角色
+你是一位${role}。
+
+# 任务
+${task}
+
+${context ? `# 背景\n${context}\n\n` : ''}${input ? `# 输入\n${input}\n\n` : ''}# 约束
+${constraintBlock}${toneLine}
+
+# 输出格式
+${outputFormat}
+
+${examples ? `# 示例\n${examples}\n\n` : ''}# 执行要求
+${stepText}
+最终输出必须严格满足上述格式与约束。`;
+  } else if (model === 'claude') {
+    prompt = `<role>
+你是一位${role}。
+</role>
+
+${context ? `<context>\n${context}\n</context>\n\n` : ''}${input ? `<input>\n${input}\n</input>\n\n` : ''}<task>
+${task}
+</task>
+
+<constraints>
+${constraintBlock}${toneLine}
+</constraints>
+
+<output_format>
+${outputFormat}
+</output_format>
+
+${examples ? `<examples>\n${examples}\n</examples>\n\n` : ''}<thinking_instruction>
+${stepText}
+</thinking_instruction>
+
+请严格按照上述 XML 标签中的要求执行。`;
+  } else if (model === 'gemini') {
+    prompt = `## 角色
+你是一位${role}。
+
+## 目标
+${task}
+
+${context ? `## 背景\n${context}\n\n` : ''}${input ? `## 输入\n${input}\n\n` : ''}## 约束
+${constraintBlock}${toneLine}
+
+## 输出格式
+${outputFormat}
+
+${examples ? `## 示例\n${examples}\n\n` : ''}## 执行步骤
+1. 理解目标、背景和输入。
+2. 按约束条件处理内容。
+3. 生成符合输出格式的最终答案。
+${stepText}
+
+请现在开始。`;
+  } else {
+    prompt = `# 角色
+你是一位${role}。
+
+# 任务
+${task}
+
+${context ? `# 背景\n${context}\n\n` : ''}${input ? `# 输入\n${input}\n\n` : ''}# 约束
+${constraintBlock}${toneLine}
+
+# 输出格式
+${outputFormat}
+
+${examples ? `# 示例\n${examples}\n\n` : ''}# 执行要求
+${stepText}
+请严格按以上结构执行。`;
+  }
+
+  document.getElementById('result').value = prompt;
+}
+
+function copyPrompt() {
+  const result = document.getElementById('result');
+  if (!result.value.trim()) {
+    alert('请先生成提示词');
+    return;
+  }
+
+  result.select();
+  result.setSelectionRange(0, result.value.length);
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(result.value)
+      .then(() => alert('已复制到剪贴板'))
+      .catch(() => {
+        document.execCommand('copy');
+        alert('已复制到剪贴板');
+      });
+  } else {
+    document.execCommand('copy');
+    alert('已复制到剪贴板');
+  }
+}
+</script>
+</body>
+</html>
